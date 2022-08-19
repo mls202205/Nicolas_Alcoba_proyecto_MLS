@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from enum import Enum
-
+import torch
 
 class DataBase(BaseModel):
     baseline_value: int
@@ -24,10 +24,10 @@ class DataBase(BaseModel):
     histogram_median: int
     histogram_variance: int
     histogram_tendency: int
-    fetal_health: int
+    
 
 class DataCreate(DataBase):
-    pass
+    fetal_health: int
 
 class Data(DataBase):
     id: int
@@ -70,3 +70,20 @@ class list_symbols(str, Enum):
     smaller_equal = "=<"
     larger_equal = "=>"
     not_equal = "!="
+
+class LR(torch.nn.Module):
+  def __init__(self):
+    super(LR, self).__init__()        
+    self.layers = torch.nn.Sequential( 
+            torch.nn.Linear(21, 128),
+            torch.nn.Sigmoid(),
+            torch.nn.Linear(128, 64),
+            torch.nn.Sigmoid(),
+            torch.nn.Linear(64, 32),
+            torch.nn.Sigmoid(),
+            torch.nn.Linear(32, 3),
+        )
+
+  def forward(self, x):
+      x = self.layers(x)
+      return x
